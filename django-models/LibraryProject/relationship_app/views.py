@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from .models import Library, Book 
+from .models import Library, Book
 from django.views.generic.detail import DetailView
 from django.views.generic import CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import user_passes_test, permission_required  # Added permission_required
 from forms import BookForm
 
 # Create your views here.
@@ -27,9 +27,10 @@ class LibraryDetails_view(DetailView):
         context = super().get_context_data(**kwargs)  # Get default context data
         library = self.get_object()  # Retrieve the current library instance
         context['average_rating'] = library.get_average_rating() 
+        return context
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm()
+    form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "relationship_app/register.html"
 
@@ -41,7 +42,7 @@ class CustomLogoutView(LogoutView):
     template_name = 'relationship_app/logout.html'
 
 class RegisterView(CreateView):
-    form_class = UserCreationForm()
+    form_class = UserCreationForm
     template_name = 'relationship_app/register.html'
     success_url = reverse_lazy('login')
 
@@ -64,7 +65,7 @@ def member_view(request):
     return render(request, 'relationship_app/member_view.html')
 
 # Add book view
-@permission_required('relationship_app.can_add_book', raise_exception=True)
+@permission_required('relationship_app.add_book', raise_exception=True)
 def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
@@ -73,10 +74,10 @@ def add_book(request):
             return redirect('book_list')
     else:
         form = BookForm()
-    return render(request, 'books/add_book.html', {'form': form})
+    return render(request, 'relationship_app/add_book.html', {'form': form})
 
 # Edit book view
-@permission_required('relationship_app.can_change_book', raise_exception=True)
+@permission_required('relationship_app.change_book', raise_exception=True)
 def edit_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
@@ -86,13 +87,13 @@ def edit_book(request, book_id):
             return redirect('book_list')
     else:
         form = BookForm(instance=book)
-    return render(request, 'books/edit_book.html', {'form': form})
+    return render(request, 'relationship_app/edit_book.html', {'form': form})
 
 # Delete book view
-@permission_required('relationship_app.can_delete_book', raise_exception=True)
+@permission_required('relationship_app.delete_book', raise_exception=True)
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
         book.delete()
         return redirect('book_list')
-    return render(request, 'books/delete_book.html', {'book': book})
+    return render(request, 'relationship_app/delete_book.html', {'book': book})
