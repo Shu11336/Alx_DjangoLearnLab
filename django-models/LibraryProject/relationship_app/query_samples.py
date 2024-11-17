@@ -23,11 +23,23 @@ def get_library_books(library_name):
 
 
 def get_author_books(author_name):
-    """Fetch all books written by a specified author."""
+    """Fetch all books written by a specified author using related_name."""
     try:
         author = Author.objects.get(name=author_name)
         books = author.books.all()
         print(f"Books written by '{author_name}':")
+        for book in books:
+            print(f"- {book.name}")
+    except Author.DoesNotExist:
+        print(f"Author '{author_name}' does not exist.")
+
+
+def get_books_by_author_filter(author_name):
+    """Fetch all books by an author using objects.filter()."""
+    try:
+        author = Author.objects.get(name=author_name)
+        books = Book.objects.filter(author=author)
+        print(f"Books by '{author_name}' (using filter):")
         for book in books:
             print(f"- {book.name}")
     except Author.DoesNotExist:
@@ -62,8 +74,14 @@ if __name__ == '__main__':
     # Sample usage
     get_library_books("Central Library")
     print("\n" + "="*50 + "\n")
+    
     get_author_books("J.K. Rowling")
     print("\n" + "="*50 + "\n")
+    
+    get_books_by_author_filter("J.K. Rowling")
+    print("\n" + "="*50 + "\n")
+    
     get_libraries_with_book("Harry Potter")
     print("\n" + "="*50 + "\n")
+    
     get_librarian("Central Library")
