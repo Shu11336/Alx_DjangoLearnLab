@@ -1,47 +1,38 @@
-import os
-import django
+# query_samples.py
 
-# Setup Django environment
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
-django.setup()
+from relationship_app.models import Library, Book, Author, Librarian
 
-from relationship_app.models import Author, Book, Library, Librarian
-
-# Query 1: Query all books by a specific author
+# 1. Query all books by a specific author
 def get_books_by_author(author_name):
     try:
         author = Author.objects.get(name=author_name)
-        # Using objects.filter to get all books by the specific author
         books = Book.objects.filter(author=author)
-        return [book.title for book in books]
+        return books
     except Author.DoesNotExist:
-        return f"No author found with name '{author_name}'"
+        return f"No author found with name {author_name}"
 
-# Query 2: List all books in a library
-def list_all_books_in_library(library_name):
+# 2. List all books in a library
+def get_books_in_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
-        books = library.books.all()  # Using the related_name 'books' from ManyToManyField in Library model
-        return [book.title for book in books]
+        books = library.books.all()  # Assuming `books` is a ManyToManyField in Library
+        return books
     except Library.DoesNotExist:
-        return f"No library found with name '{library_name}'"
+        return f"No library found with name {library_name}"
 
-# Query 3: Retrieve the librarian for a library
+# 3. Retrieve the librarian for a library by querying Librarian model directly
 def get_librarian_for_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
-        # Using Librarian.objects.get with library as a filter
-        librarian = Librarian.objects.get(library=library)
-        return librarian.name
+        librarian = Librarian.objects.get(library=library)  # Explicitly using Librarian.objects.get with library instance
+        return librarian
     except Library.DoesNotExist:
-        return f"No library found with name '{library_name}'"
+        return f"No library found with name {library_name}"
     except Librarian.DoesNotExist:
-        return f"No librarian assigned to the library '{library_name}'"
+        return f"No librarian found for the library {library_name}"
 
-
-# Sample function calls
+# Sample outputs for testing
 if __name__ == "__main__":
-    # Replace 'Author Name', 'Library Name' with actual names for testing
-    print("Books by Author:", get_books_by_author("Author Name"))
-    print("All Books in Library:", list_all_books_in_library("Library Name"))
-    print("Librarian for Library:", get_librarian_for_library("Library Name"))
+    print(get_books_by_author("George Orwell"))
+    print(get_books_in_library("Central Library"))
+    print(get_librarian_for_library("Central Library"))
