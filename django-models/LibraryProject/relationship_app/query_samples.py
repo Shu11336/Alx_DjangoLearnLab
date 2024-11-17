@@ -58,11 +58,11 @@ def get_libraries_with_book(book_name):
         print(f"Book '{book_name}' does not exist.")
 
 
-def get_librarian(library_name):
-    """Fetch the librarian responsible for a specified library."""
+def get_librarian_by_library(library_name):
+    """Fetch the librarian responsible for a specified library using Librarian.objects.get()."""
     try:
         library = Library.objects.get(name=library_name)
-        librarian = library.librarian
+        librarian = Librarian.objects.get(library=library)
         print(f"Librarian of '{library_name}' library: {librarian.name}")
     except Library.DoesNotExist:
         print(f"Library '{library_name}' does not exist.")
@@ -84,4 +84,4 @@ if __name__ == '__main__':
     get_libraries_with_book("Harry Potter")
     print("\n" + "="*50 + "\n")
     
-    get_librarian("Central Library")
+    get_librarian_by_library("Central Library")
