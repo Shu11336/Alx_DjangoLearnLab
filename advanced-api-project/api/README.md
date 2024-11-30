@@ -1,4 +1,4 @@
-# Explaining Each View 
+# Explaining Each View  
 
 #Added django-filter in INSTALLED APPS
 #added needed settings for the filter to work
